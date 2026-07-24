@@ -1,0 +1,30 @@
+[gpio]
+pigpio_host = "localhost"
+pigpio_port = 8888
+debounce_ms = 20
+
+[adc]
+bus = 1
+address = 72
+full_scale_v = 4.096
+data_rate_sps = 128
+divider_scale = 4.9
+gain = [1.0, 1.0, 1.0, 1.0]
+offset_v = [0.0, 0.0, 0.0, 0.0]
+timeout_s = 0.1
+
+[ina226]
+bus = 1
+address = 64
+shunt_ohm = 0.01
+current_lsb_a = 0.00025
+averaging = 16
+conversion_time_us = 1100
+
+[servo]
+frequency_hz = 50
+min_pulse_us = [1000, 1000]
+max_pulse_us = [2000, 2000]
+min_angle = [0.0, 0.0]
+max_angle = [180.0, 180.0]
+
