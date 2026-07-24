@@ -1,0 +1,281 @@
+schema_version: 1
+board:
+  id: rdk-40pin-expansion-v1
+  title: RDK 40Pin 通用拓展板
+  schematic: Schematic1
+  pcb: Board1
+  revision: "V1.0"
+  design_date: "2026-07-23"
+  authority: final-export
+  notes:
+    - 本文件描述最终导出的原理图与网表，不描述早期设计目标。
+    - RDK 风格信号名不等于 Raspberry Pi 外设编号，主机适配必须使用 host_profiles。
+
+sources:
+  - path: 原理图.pdf
+    role: schematic_visual
+    sha256: 7bb0e83cfaccf8e38ebeca4bde53d35fa6b9e91cac28252d729de4fed84a7a41
+  - path: 供电电路.esch
+    role: schematic_source
+    sha256: 33a206ec4b3895189021d2d463fa0f201b374cdbce9a0cbffe32303979dacbe4
+  - path: 逻辑拓展电路.esch
+    role: schematic_source
+    sha256: d041f51b3312321543858717d51d1ad1a725bc03fe5b933db158a48a1d62d275
+  - path: Netlist_Schematic1_2026-07-24.enet
+    role: electrical_netlist
+    sha256: c44fb89fe9167da3c30bb1669a9eec80f75184ba40055dcefdd496c6aa2a2fc2
+  - path: pcb.pdf
+    role: pcb_visual
+    sha256: 8521e8e50f17ec27a42e567ca0ed55c35c3729e9398f2646f5dda2ac062fc971
+
+power_domains:
+  12V_IN:
+    nominal_v: 12
+    source: DC007 与 XT30 经同一输入保护路径
+    software_controlled: false
+  5V_SYS:
+    nominal_v: 5.08
+    source: U1 TPS5450
+    software_controlled: false
+    host_backfeed_warning: 当前直接连接 40Pin 2/4
+  5V_SERVO:
+    nominal_v: 5.08
+    source: U9 TPS5450
+    software_controlled: false
+  3.3V:
+    nominal_v: 3.3
+    source: host 40Pin 1/17
+    software_controlled: false
+
+host_header:
+  reference: CN2
+  footprint: 2x20-2.54mm
+  pins:
+    "1":  {net: 3.3V, kind: power}
+    "2":  {net: 5V_SYS, kind: power}
+    "3":  {net: I2C5_SDA, kind: bidirectional}
+    "4":  {net: 5V_SYS, kind: power}
+    "5":  {net: I2C5_SCL, kind: output}
+    "6":  {net: GND, kind: ground}
+    "7":  {net: "", kind: not_connected}
+    "8":  {net: UART1_TX, kind: output}
+    "9":  {net: GND, kind: ground}
+    "10": {net: UART1_RX, kind: input}
+    "11": {net: UART7_TX, kind: output}
+    "12": {net: "", kind: not_connected}
+    "13": {net: UART7_RX_SW, kind: input}
+    "14": {net: GND, kind: ground}
+    "15": {net: UART2_TX, kind: output}
+    "16": {net: UART6_TX, kind: output}
+    "17": {net: 3.3V, kind: power}
+    "18": {net: SPI1_CS2, kind: output}
+    "19": {net: SPI1_MOSI, kind: output}
+    "20": {net: GND, kind: ground}
+    "21": {net: SPI1_MISO, kind: input}
+    "22": {net: UART2_RX, kind: input}
+    "23": {net: SPI1_SCL, kind: output}
+    "24": {net: SPI1_CS0, kind: output}
+    "25": {net: GND, kind: ground}
+    "26": {net: SPI1_CS1, kind: output}
+    "27": {net: I2C0_SDA, kind: bidirectional}
+    "28": {net: I2C0_SCL, kind: output}
+    "29": {net: KEY2, kind: input, active_level: high}
+    "30": {net: GND, kind: ground}
+    "31": {net: KEY1, kind: input, active_level: high}
+    "32": {net: PWM32, kind: output}
+    "33": {net: PWM33, kind: output}
+    "34": {net: GND, kind: ground}
+    "35": {net: BUZZ, kind: output, active_level: high}
+    "36": {net: UART6_RX, kind: input}
+    "37": {net: KEY0, kind: input, active_level: high}
+    "38": {net: RELAY1, kind: output, active_level: low}
+    "39": {net: GND, kind: ground}
+    "40": {net: RELAY2, kind: output, active_level: low}
+
+connectors:
+  UART1:
+    function: 主硬件串口
+    pins: {"1": 5V_SYS, "2": UART1_TX, "3": UART1_RX, "4": GND}
+  UART7:
+    function: RDK UART7；Pi 4 不支持为硬件串口
+    pins: {"1": 5V_SYS, "2": UART7_TX, "3": UART7_RX, "4": GND}
+  UART2:
+    function: RDK UART2；Pi 4 不支持为硬件串口
+    pins: {"1": 5V_SYS, "2": UART2_TX, "3": UART2_RX, "4": GND}
+  UART6:
+    function: RDK UART6；Pi 4 不支持为硬件串口
+    pins: {"1": 5V_SYS, "2": UART6_TX, "3": UART6_RX, "4": GND}
+  RC接收:
+    function: 反相 RC 串口输入
+    pins: {"1": 5V_SYS, "2": "$2N2657", "3": GND, "4": GND}
+  RC与串口切换:
+    function: UART7_RX_SW 在 RC 反相输出与 UART7_RX 之间选择
+    pins: {"1": RC, "2": UART7_RX_SW, "3": UART7_RX}
+  I2C5A:
+    function: I2C5 并联口 A
+    shared_group: i2c5
+    pins: {"1": 5V_SYS, "2": I2C5_SDA, "3": I2C5_SCL, "4": GND}
+  I2C5B:
+    function: I2C5 并联口 B
+    shared_group: i2c5
+    pins: {"1": 5V_SYS, "2": I2C5_SDA, "3": I2C5_SCL, "4": GND}
+  I2C0A:
+    function: I2C0/ID EEPROM 并联口 A
+    shared_group: i2c0
+    pins: {"1": 5V_SYS, "2": I2C0_SDA, "3": I2C0_SCL, "4": GND}
+  I2C0B:
+    function: I2C0/ID EEPROM 并联口 B
+    shared_group: i2c0
+    pins: {"1": 5V_SYS, "2": I2C0_SDA, "3": I2C0_SCL, "4": GND}
+  SPI1A:
+    function: SPI 并联口 A
+    shared_group: spi-main
+    pins: {"1": 5V_SYS, "2": GND, "3": SPI1_MOSI, "4": SPI1_MISO, "5": SPI1_SCL, "6": SPI1_CS0, "7": SPI1_CS1, "8": 3.3V}
+  SPI1B:
+    function: SPI 并联口 B
+    shared_group: spi-main
+    pins: {"1": 5V_SYS, "2": GND, "3": SPI1_MOSI, "4": SPI1_MISO, "5": SPI1_SCL, "6": SPI1_CS0, "7": SPI1_CS2, "8": 3.3V}
+  ADS1115:
+    function: 四路 0-16V 模拟输入
+    pins: {"1": AIN0, "2": AIN1, "3": AIN2, "4": AIN3, "5": GND}
+  舵机0:
+    function: PWM0 舵机输出
+    pins: {"1": 5V_SERVO, "2": PWM32, "3": GND}
+  舵机1:
+    function: PWM1 舵机输出
+    pins: {"1": 5V_SERVO, "2": PWM33, "3": GND}
+  继电器1:
+    function: 外部继电器模块 1
+    pins: {"1": 5V_SYS, "2": "$2N25149", "3": GND}
+    signal_behavior: RELAY1 低时，连接器 pin2 输出 3.3V
+  继电器2:
+    function: 外部继电器模块 2
+    pins: {"1": 5V_SYS, "2": "$2N25232", "3": GND}
+    signal_behavior: RELAY2 低时，连接器 pin2 输出 3.3V
+  BUZZ:
+    function: 外接蜂鸣器预留口
+    pins: {"1": BUZZ, "2": 5V_SYS}
+    warning: 当前 pin1 是原始 GPIO，不是 MOSFET 开关端
+  FAN:
+    function: 固定 5V_SERVO 风扇电源
+    pins: {"1": 5V_SERVO, "2": GND}
+  5V_SERVO:
+    function: 5V_SERVO 辅助输出
+    pins: {"1": 5V_SERVO, "2": GND}
+  CAN_IN:
+    function: 外部 CAN 物理总线输入
+    pins: {"1": CAN_H, "2": CAN_L, "3": GND}
+  CAN_OUT:
+    function: CAN 与 12V 透传输出
+    pins: {"1": 12V_IN, "2": CAN_H, "3": CAN_L, "4": GND}
+  DC007:
+    function: 直流圆口输入
+    pins: {"1": "$1N3051", "2": GND, "3": GND}
+  XT30:
+    function: XT30 电源输入
+    pins: {"1": GND, "2": "$1N3051"}
+
+devices:
+  ads1115:
+    reference: U14
+    part: ADS1115QDGSRQ1
+    bus: i2c5
+    address: 0x48
+    address_pin_current_state: floating
+    address_pin_required_revision: GND
+    external_divider:
+      r_high_ohm: 39000
+      r_low_ohm: 10000
+      scale: 4.9
+    defaults:
+      pga_full_scale_v: 4.096
+      data_rate_sps: 128
+      mode: single_shot
+  ina226:
+    reference: U16
+    part: INA226AIDGSR
+    bus: i2c5
+    address: 0x40
+    shunt_ohm: 0.01
+    defaults:
+      current_lsb_a: 0.00025
+      calibration: 2048
+      power_lsb_w: 0.00625
+      averaging: 16
+      conversion_time_us: 1100
+      mode: continuous_shunt_and_bus
+
+host_profiles:
+  raspberry_pi_4:
+    supported: true
+    platform_match:
+      model_contains: Raspberry Pi 4
+      architecture: aarch64
+      tested_kernel: 6.12.47+rpt-rpi-v8
+    pin_numbering: bcm
+    physical_to_bcm:
+      "3": 2
+      "5": 3
+      "8": 14
+      "10": 15
+      "11": 17
+      "13": 27
+      "15": 22
+      "16": 23
+      "18": 24
+      "19": 10
+      "21": 9
+      "22": 25
+      "23": 11
+      "24": 8
+      "26": 7
+      "27": 0
+      "28": 1
+      "29": 5
+      "31": 6
+      "32": 12
+      "33": 13
+      "35": 19
+      "36": 16
+      "37": 26
+      "38": 20
+      "40": 21
+    interfaces:
+      i2c5: {status: supported, linux_device: /dev/i2c-1, actual_pi_name: I2C1}
+      i2c0: {status: disabled, reason: GPIO0/1 是 HAT ID EEPROM 保留总线}
+      spi1a.cs0: {status: supported, linux_device: /dev/spidev0.0, actual_pi_name: SPI0_CE0}
+      spi1a.cs1: {status: supported, linux_device: /dev/spidev0.1, actual_pi_name: SPI0_CE1}
+      spi1b.cs0: {status: alias, alias_of: spi1a.cs0}
+      spi1b.cs2: {status: supported_manual_cs, linux_device: /dev/spidev0.0, cs_bcm: 24}
+      uart1: {status: supported, linux_device: /dev/serial0}
+      uart7: {status: unsupported, reason: BCM17/27 不是 Pi 4 硬件 UART 引脚对}
+      uart2: {status: unsupported, reason: BCM22/25 不是 Pi 4 硬件 UART 引脚对}
+      uart6: {status: unsupported, reason: BCM23/16 不是 Pi 4 硬件 UART 引脚对}
+      rc: {status: unsupported, reason: 依赖 UART7_RX_SW}
+      can: {status: passive_only, reason: 未连接 40Pin 且板上没有 CAN 控制器/收发器}
+    gpio:
+      key0: {bcm: 26, direction: input, active_level: high, debounce_ms: 20}
+      key1: {bcm: 6, direction: input, active_level: high, debounce_ms: 20}
+      key2: {bcm: 5, direction: input, active_level: high, debounce_ms: 20}
+      buzzer: {bcm: 19, direction: output, active_level: high, safe_level: low}
+      relay1: {bcm: 20, direction: output, active_level: low, safe_level: high}
+      relay2: {bcm: 21, direction: output, active_level: low, safe_level: high}
+      servo0: {bcm: 12, direction: pwm_output}
+      servo1: {bcm: 13, direction: pwm_output}
+
+safety:
+  - id: ads1115-address-floating
+    severity: blocker
+    message: U14 ADDR 当前悬空；量产前必须接 GND 固定为 0x48。
+  - id: host-5v-backfeed
+    severity: high
+    message: 5V_SYS 直接连接 40Pin 2/4；主机单独供电时存在倒灌风险。
+  - id: dual-input-backfeed
+    severity: high
+    message: DC007 与 XT30 当前并接；不得连接两个独立电源。
+  - id: external-buzzer-gpio
+    severity: high
+    message: BUZZ 连接器暴露 5V_SYS 与原始 3.3V GPIO，不得直接连接普通两线蜂鸣器。
+  - id: naming-is-host-specific
+    severity: medium
+    message: I2C5/SPI1/UARTx 是 RDK 命名，其他主机必须查 host profile。
